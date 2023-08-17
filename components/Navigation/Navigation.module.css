@@ -1,0 +1,22 @@
+.links {
+  margin: 0 auto;
+  width: auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.link {
+  color: white;
+  margin-right: 50px;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+.active {
+  color: white;
+  margin-right: 50px;
+  text-decoration: none;
+  background-color: rgb(10, 10, 167);
+  padding: 10px;
+  border-radius: 5px;
+}
