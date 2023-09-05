@@ -5,6 +5,9 @@ import PostsProvider from "../store/PostsProvider";
 import Modal from "../ui/Modal";
 import { Post } from "@/models/Post.model";
 import { readPosts } from "@/service/post.service";
+import { useSession } from "next-auth/react";
+import { AuthCheck } from "@/components/AuthCheck/AuthCheck";
+import { USER_ROLE } from "@/constants/roles";
 
 export interface Props {
   posts: Post[];
@@ -15,12 +18,25 @@ const PostsPage: React.FC = (props) => {
   const [dialogData, setDialogData] = useState();
   const [isDialogEdit, setIsDialogEdit] = useState(false);
   const [posts, setPosts] = useState([]);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    readPosts({ cache: "no-store" }, (posts: any) => {
-      setPosts(posts);
-    });
-  }, []);
+    if (session && session?.user?.role == USER_ROLE.ADMIN) {
+      readPosts(
+        {
+          cache: "no-store",
+          // cache: "no-store", -> default with external api, activates on every request
+          // "force-cache" -> caching request, after refresh no changes
+          headers: {
+            "auth-token": session?.user.token,
+          },
+        },
+        (posts: any) => {
+          setPosts(posts);
+        }
+      );
+    }
+  }, [status]);
 
   const closeDialogHandler = () => {
     setDialogIsShown(false);
@@ -38,20 +54,22 @@ const PostsPage: React.FC = (props) => {
   };
 
   return (
-    <PostsProvider>
-      {dialogIsShown && (
-        <Modal
-          data={dialogData}
-          isDialogEdit={isDialogEdit}
-          onClose={closeDialogHandler}
+    <AuthCheck role={USER_ROLE.ADMIN}>
+      <PostsProvider>
+        {dialogIsShown && (
+          <Modal
+            data={dialogData}
+            isDialogEdit={isDialogEdit}
+            onClose={closeDialogHandler}
+          />
+        )}
+        <PostsList
+          onEditPost={editPostHandler}
+          onOpenDialog={openDialogHandler}
+          posts={posts}
         />
-      )}
-      <PostsList
-        onEditPost={editPostHandler}
-        onOpenDialog={openDialogHandler}
-        posts={posts}
-      />
-    </PostsProvider>
+      </PostsProvider>
+    </AuthCheck>
   );
 };
 

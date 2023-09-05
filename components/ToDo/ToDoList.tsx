@@ -18,7 +18,7 @@ const ToDoList: React.FC<Props> = (props) => {
   const todos = useSelector((state: any) => state.todo.todo);
 
   const logOutHandler = () => {
-    signOut({ callbackUrl: "http://localhost:3000/signin" });
+    signOut({ callbackUrl: `${process.env.NEXT_PUBLIC_URL}` });
   };
 
   useEffect(() => {

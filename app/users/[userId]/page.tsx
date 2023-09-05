@@ -7,19 +7,24 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import classes from "./../../../components/Users/UsersList.module.css";
 import { User } from "@/models/User.model";
+import { readUser } from "@/service/user.service";
 
 const UserDetail = ({ params }: { params: { userId: string } }) => {
   const userId = params["userId"];
   const [user, setUser] = useState<User>();
-  const getUser = async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL}/api/users/${userId}`
-    );
-    const user = await response.json();
-    setUser(user);
-  };
+
   useEffect(() => {
-    getUser();
+    readUser(
+      {
+        params: {
+          userId,
+        },
+        method: "GET",
+      },
+      (data: any) => {
+        setUser(data);
+      }
+    );
   }, []);
   return (
     <Container sx={{ py: 8 }} maxWidth="md" className={classes.container}>

@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import classes from "./Modal.module.css";
 import PostsContext from "../store/posts-contex";
 import { useSession } from "next-auth/react";
-import { createPost, deletePost } from "@/service/post.service";
+import { createPost, editPost } from "@/service/post.service";
 
 interface Props {
   onClose: () => void;
@@ -61,19 +61,25 @@ const ModalOverlay: React.FC<Props> = (props) => {
             description: enteredDescription,
             userId: session?.user?.id,
           },
+          headers: {
+            "auth-token": session?.user.token,
+          },
         },
         (newPost: any) => {
           postsCtx.addPost(newPost);
         }
       );
     } else {
-      deletePost(
+      editPost(
         {
           body: {
             postId: post?._id,
             title: enteredTitle,
             description: enteredDescription,
             userId: session?.user?.id,
+          },
+          headers: {
+            "auth-token": session?.user.token,
           },
           method: "PATCH",
         },

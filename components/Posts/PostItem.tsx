@@ -4,6 +4,7 @@ import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 import { Post } from "@/models/Post.model";
 import { useSession } from "next-auth/react";
+import { USER_ROLE } from "@/constants/roles";
 interface Props {
   post: Post;
   onEdit: () => void;
@@ -17,7 +18,7 @@ const PostItem: React.FC<Props> = (props) => {
       <h4 className={classes.heading}>{props.post.title}</h4>
       <p className={classes.body}>{props.post.description}</p>
       <div className={classes.control}>
-        {session?.user.role == "admin" && (
+        {session?.user.role == USER_ROLE.ADMIN && (
           <CardActions>
             <Button size="small" onClick={props.onEdit}>
               Edit

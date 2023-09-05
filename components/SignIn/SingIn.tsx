@@ -31,10 +31,10 @@ const SignIn: React.FC = () => {
     if (!result?.error) {
       console.log("no errors");
       // router.push('/posts');
-      window.location.href = `${process.env.NEXT_PUBLIC_URL}/posts`;
+      window.location.href = `${process.env.NEXT_PUBLIC_URL}`;
       // redirect('http://localhost:3000/posts');
     } else {
-      console.log("errors");
+      console.log(error);
       setError("Invalid credentials");
     }
   };

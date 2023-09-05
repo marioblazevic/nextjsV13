@@ -1,33 +1,30 @@
-import { connectToDatabase } from "@/utils/db";
-import User from "@/schemas/User";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import jsonwebtoken from "jsonwebtoken";
-import { verifyPassword } from "@/utils/auth";
+import { client } from "../../../../utils/api-client";
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
   secret: process.env.TOKEN_SECRET,
   providers: [
     CredentialsProvider({
       credentials: {},
       async authorize(credentials, req) {
-        connectToDatabase();
-
-        const getUser = await User.findOne({ email: req.body?.email });
-        const token = jsonwebtoken.sign(
-          { _id: getUser._id, role: getUser.role },
-          process.env.TOKEN_SECRET as string
+        const getUser = await client(
+          `${process.env.NEXT_PUBLIC_BACKEND_API}/user/login`,
+          {
+            body: {
+              email: req.body?.email,
+              password: req.body?.password,
+            },
+          }
         );
+        if(!getUser)
+        return null;
         const user = {
-          id: getUser._id,
+          id: getUser.id,
           role: getUser.role,
-          token: token,
+          token: getUser.token,
         };
-
-        if (
-          getUser &&
-          (await verifyPassword(req.body?.password, getUser.password))
-        ) {
+        if (user) {
           return user;
         } else {
           return null;

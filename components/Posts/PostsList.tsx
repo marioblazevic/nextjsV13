@@ -6,6 +6,7 @@ import classes from "./PostsList.module.css";
 import DialogButton from "@/app/ui/DialogButton";
 import { Post } from "@/models/Post.model";
 import { deletePost } from "@/service/post.service";
+import { useSession } from "next-auth/react";
 
 interface Props {
   posts: Post[];
@@ -14,6 +15,8 @@ interface Props {
 }
 
 const PostsList: React.FC<Props> = (props) => {
+  const { data: session } = useSession();
+
   const postsCtx = useContext(PostsContext);
 
   useEffect(() => {
@@ -26,6 +29,9 @@ const PostsList: React.FC<Props> = (props) => {
         method: "DELETE",
         body: {
           postId,
+        },
+        headers: {
+          "auth-token": session?.user.token,
         },
       },
       () => {
